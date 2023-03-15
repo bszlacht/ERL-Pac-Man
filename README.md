@@ -24,3 +24,21 @@ and Thompson sampling, to balance the tradeoff between trying new actions and ex
 
 Our idea is to train different models with different policies and different algorithms like Sarsa, Double Q-learning
 and MCTS to then combine them into one ensemble learning model.
+
+## Scope:
+
+We want to implement few reinforcement learning models and use them as agents in order to combine them in a 
+single model. The problem to solve will be a popular game Pac-Man. We chose it because it is simple to visualize 
+and the rules of the game are clear.
+
+## Plan:
+
+1. Implement Pac-Man environment.
+2. Pac-Man visualization in PyGame.
+3. Implement few reinforcement learning models.
+4. Train previously created models.
+5. Implement ensemble learning model.
+6. Use ensemble learning model.
+7. Graph results and compare ensemble vs single rl models.
+
+## Requirements:
