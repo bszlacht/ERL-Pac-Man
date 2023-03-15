@@ -3,7 +3,7 @@
 ## General idea:
 We want to check if there are any benefits of using ensemble learning and compare it to methods that are used to build
 the ensemble learning model. <br />
-![alt_text](https://github.com/bszlacht/mpr/blob/main/plots/bs12.png)<br />
+![alt_text](https://github.com/bszlacht/ERL-Pac-Man/blob/main/readme_imgs/1.jpg)<br />
 
 ## What is ensemble learning?
 
