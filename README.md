@@ -1,4 +1,4 @@
-# Ensemble Reinforcement Learning demonstration via Pac-Man
+# Combining different learned agents to solve Pac-Man
 
 ## General idea:
 We want to check if there are any benefits of using ensemble learning and compare it to methods that are used to build
