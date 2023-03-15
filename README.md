@@ -30,7 +30,7 @@ and MCTS to then combine them into one ensemble learning model.
 
 We want to implement few reinforcement learning models and use them as agents in order to combine them in a 
 single model. The problem to solve will be a popular game Pac-Man. We chose it because it is simple to visualize 
-and the rules of the game are clear.
+and the rules of the game are clear and simple.
 
 ## Plan:
 
@@ -43,3 +43,8 @@ and the rules of the game are clear.
 7. Graph results and compare ensemble vs single rl models.
 
 ## Requirements:
+* Numpy
+* PyGame
+* Reinforcement learning models and their usage
+* Ensemble learning model and its usage
+* Matplotlib
