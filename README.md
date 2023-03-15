@@ -1,8 +1,9 @@
-# Ensemble Reinforcement Learning demonstration via Pac-Man
+# Combining different learned agents to solve Pac-Man
 
 ## General idea:
 We want to check if there are any benefits of using ensemble learning and compare it to methods that are used to build
-the ensemble learning model.
+the ensemble learning model. <br />
+![alt_text](https://github.com/bszlacht/ERL-Pac-Man/blob/main/readme_imgs/1.jpg)<br />
 
 ## What is ensemble learning?
 
