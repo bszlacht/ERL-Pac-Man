@@ -9,7 +9,6 @@ class PacmanGame:
 
     def run(self):
       state = self.env.reset()
-      print(state)
       while True:
         self.env.render()
         action = self.make_action(state)
