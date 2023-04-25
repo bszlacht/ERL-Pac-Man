@@ -172,6 +172,8 @@ class Game(object):
                     matrix=self.maze.get_state_matrix(),
                     ghost_positions=[(ghost.nearest_col, ghost.nearest_row) \
                                      for ghost in self.ghosts],
+                    ghost_pixel_positions = [ghost.get_pixel_position() \
+                                     for ghost in self.ghosts],
                     screen=pg.surfarray.pixels3d(self.prev_screen),
                     player_action=self.player.current_action)
                 action = int(action)

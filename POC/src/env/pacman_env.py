@@ -146,6 +146,8 @@ class PacmanEnv(gym.Env):
 
     def get_info_dict(self) -> Dict[str, Any]:
         ghosts_pixel_pos = [ghost.get_pixel_position() for ghost in self.game.ghosts]
+        ghosts_pos = [(ghost.nearest_col, ghost.nearest_row) \
+                                     for ghost in self.game.ghosts]
         number_of_scared_ghosts = sum([ghost.is_vulnerable() for ghost in self.game.ghosts])
         info = {
             'win': self.get_mode() == GameMode.black_screen,
@@ -157,6 +159,7 @@ class PacmanEnv(gym.Env):
             'number of scared ghosts': number_of_scared_ghosts,
             'state matrix': self.get_state_matrix(),
             'ghosts_pixel_pos': ghosts_pixel_pos,
+            'ghosts_pos': ghosts_pos,
             'player vel': self.game.player.get_vel(),
             'player action': self.game.player.current_action
         }
@@ -246,3 +249,5 @@ class PacmanEnv(gym.Env):
     def get_screen_rgb_array(self):
         screen = self.game.screen.copy()
         return pg.surfarray.pixels3d(screen)
+    def get_ghosts_positions(self):
+      return [ghost.get_pixel_position() for ghost in self.game.ghosts]
