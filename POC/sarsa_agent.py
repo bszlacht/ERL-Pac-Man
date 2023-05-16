@@ -1,7 +1,3 @@
-"""
-An example of how to make the ai agent work with naive q learning
-"""
-
 import math
 import pickle
 import random
@@ -20,8 +16,8 @@ import gym
 from wrappers import SkipFrame
 
 
-class QAgent(Agent):
-    name = 'q_agent'
+class SarsaAgent(Agent):
+    name = 'sarsa_agent'
 
     def __init__(self, **kwargs):
         super().__init__()
@@ -39,7 +35,7 @@ class QAgent(Agent):
         if self.q_table is None:
             self.load_q_table()
 
-        state = QAgent.get_state(
+        state = SarsaAgent.get_state(
             kwargs['player_pos'], kwargs['ghost_positions'])
 
         try:
@@ -61,6 +57,17 @@ class QAgent(Agent):
     def get_state(player_position: Tuple[int, int], ghosts_positions: List[Tuple[int, int]]):
         return PacmanState(player_position, ghosts_positions)
 
+    def run(self):
+        env = gym.make('pacman-v0', layout=self.layout)
+        env = SkipFrame(env, skip=1)
+        info = env.reset(mode="info")
+        for i in count():
+            env.render()
+            action = self.act(player_pos=info['player position'], ghost_positions=info['ghosts_pos'])
+            action = int(action)
+            obs, rewards, done, info = env.step(action)
+            if done:
+                return
     def train(self, episodes, **kwargs):
         n_episodes = episodes
         discount = 0.99
@@ -82,27 +89,31 @@ class QAgent(Agent):
 
         for episode in range(n_episodes):
             info = env.reset(mode="info")
-            state = QAgent.get_state(
+            state = SarsaAgent.get_state(
                 info['player position'], info['ghosts_pos'])
             total_rewards = 0
 
             epsilon = epsilon_by_frame(episode)
 
+            if random.uniform(0, 1) > epsilon:
+                action = int(np.argmax(q_table[state]))
+            else:
+                action = env.action_space.sample()
             for i in count():
                 env.render()
-                if random.uniform(0, 1) > epsilon:
-                    action = int(np.argmax(q_table[state]))
-                else:
-                    action = env.action_space.sample()
-
                 obs, rewards, done, info = env.step(action)
-                next_state = QAgent.get_state(
+                next_state = SarsaAgent.get_state(
                     info['player position'], info['ghosts_pos'])
+                if random.uniform(0, 1) > epsilon:
+                  next_action = int(np.argmax(q_table[next_state]))
+                else:
+                  next_action = env.action_space.sample()
                 if next_state != state:
-                    q_table[state][action] += alpha * (
-                        rewards + discount * np.max(q_table[next_state]) - q_table[state][action])
+                  q_table[state][action] += alpha * (
+                      rewards + discount * q_table[next_state][next_action] - q_table[state][action])
 
                 state = next_state
+                action = next_action
                 total_rewards += rewards
                 if done:
                     print(f'{episode} episode finished after {i} timesteps')
@@ -125,19 +136,20 @@ class QAgent(Agent):
 
 
 def train_agent(layout: str, episodes: int = 5000):
-    agent = QAgent(layout=layout, version='4')
+    agent = SarsaAgent(layout=layout, version='3')
     agent.train(episodes=episodes)
 
 
 def boost_agent(layout: str, episodes: int = 5000):
-    agent = QAgent(layout=layout, version='3')
+    agent = SarsaAgent(layout=layout, version='3')
     agent.load_q_table()
     agent.train(episodes=episodes)
 
 
 def run_agent(layout: str):
-    agent = QAgent(layout=layout, version='3')
+    agent = SarsaAgent(layout=layout, version='1')
     agent.load_q_table()
+    #agent.run()
     controller = Controller(
         layout_name=layout, act_sound=True, act_state=False, ai_agent=agent)
     controller.load_menu()
