@@ -405,7 +405,7 @@ class Game(object):
                             self.snd_pellet[self.pellet_snd_num].play()
                         self.pellet_snd_num = 1 - self.pellet_snd_num
                         self.add_score(10)
-                        self.add_reward(1)
+                        self.add_reward(4)
 
                         if self.maze.get_number_of_pellets() == 0:
                             self.set_mode(6)
