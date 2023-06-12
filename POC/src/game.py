@@ -405,7 +405,7 @@ class Game(object):
                             self.snd_pellet[self.pellet_snd_num].play()
                         self.pellet_snd_num = 1 - self.pellet_snd_num
                         self.add_score(10)
-                        self.add_reward(4)
+                        self.add_reward(10)
 
                         if self.maze.get_number_of_pellets() == 0:
                             self.set_mode(6)
@@ -416,7 +416,7 @@ class Game(object):
                         if self.sounds_active:
                             self.snd_power_pellet.play()
                         self.add_score(100)
-                        self.add_reward(2)
+                        self.add_reward(20)
                         self.make_ghosts_vulnerable()
                     elif self.maze.map_matrix[row][col] == 11:
                         # ran into a horizontal door
@@ -444,10 +444,11 @@ class Game(object):
             if check_if_hit(self.player.x, self.player.y, ghost.x, ghost.y, (3 * TILE_SIZE) // 4):
                 if ghost.state == GhostState.normal:
                     self.set_mode(GameMode.hit_ghost)
-                    self.add_reward(-5)
+                    if(self.player.lives == 0):
+                        self.add_reward(-500)
                 elif ghost.state == GhostState.vulnerable:
                     self.add_score(ghost.value)
-                    self.add_reward(5)
+                    self.add_reward(200)
                     self.draw_ghost_value(ghost.value)
                     self.duplicate_vulnerable_ghosts_value()
                     if self.sounds_active:

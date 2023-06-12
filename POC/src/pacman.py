@@ -77,8 +77,7 @@ class Pacman(object):
 
             game.check_if_hit_something()
             game.check_collision_with_ghosts()
-            if self.vel_x == 0 and self.vel_y == 0:
-                game.add_reward(-1)
+            game.add_reward(-1)
             # todo: check collision with fruit
         else:
             game.add_reward(-10)
