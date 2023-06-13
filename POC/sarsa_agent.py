@@ -14,6 +14,7 @@ from src.env.agent import Agent
 import gym
 
 from wrappers import SkipFrame
+import dill
 
 
 class SarsaAgent(Agent):
@@ -28,9 +29,9 @@ class SarsaAgent(Agent):
         else:
             self.filename = ''.join(
                 [self.name, '_', self.layout, '_', self.version, '.pkl'])
-
+        self.stats_filename = "stats_" + self.filename + ".pkl"
         self.q_table = None
-
+        self.stats = None
     def act(self, **kwargs):
         if self.q_table is None:
             self.load_q_table()
@@ -47,28 +48,31 @@ class SarsaAgent(Agent):
 
     def load_q_table(self):
         with open(self.filename, 'rb') as handle:
-            self.q_table = pickle.load(handle)
+            self.q_table = dill.load(handle)
             handle.close()
-
+    def load_stats(self):
+        with open(self.stats_filename, 'rb') as handle:
+            self.stats = dill.load(handle)
+            handle.close()
     def __del__(self):
         del self.q_table
 
     @staticmethod
     def get_state(player_position: Tuple[int, int], ghosts_positions: List[Tuple[int, int]]):
-        return PacmanState(player_position, ghosts_positions)
+        return PacmanState(player_position, ghosts_positions).get_state()
 
     def run(self):
         env = gym.make('pacman-v0', layout=self.layout)
         env = SkipFrame(env, skip=1)
         info = env.reset(mode="info")
         for i in count():
-            env.render()
+            #env.render()
             action = self.act(player_pos=info['player position'], ghost_positions=info['ghosts_pos'])
             action = int(action)
             obs, rewards, done, info = env.step(action)
             if done:
                 return
-    def train(self, episodes, **kwargs):
+    def train(self, episodes, start_episode = 0, **kwargs):
         n_episodes = episodes
         discount = 0.99
         alpha = 0.6  # learning rate
@@ -79,15 +83,19 @@ class SarsaAgent(Agent):
         env = SkipFrame(env, skip=10)
         if self.q_table is None:
           q_table = defaultdict(lambda: np.zeros(env.action_space.n))
+          q_table.update()
         else:
+          
             q_table = self.q_table
             q_table.setdefault(lambda: np.zeros(env.action_space.n))
-        stats_filename = "stats_" + self.filename + ".pkl"
-        stats = []
+        if self.stats is None:
+            stats = []
+        else:
+            stats = self.stats
         def epsilon_by_frame(frame_idx): return epsilon_min + (epsilon - epsilon_min) * math.exp(
             -1. * frame_idx / epsilon_decay_rate)
 
-        for episode in range(n_episodes):
+        for episode in range(start_episode, n_episodes):
             info = env.reset(mode="info")
             state = SarsaAgent.get_state(
                 info['player position'], info['ghosts_pos'])
@@ -100,7 +108,6 @@ class SarsaAgent(Agent):
             else:
                 action = env.action_space.sample()
             for i in count():
-                env.render()
                 obs, rewards, done, info = env.step(action)
                 next_state = SarsaAgent.get_state(
                     info['player position'], info['ghosts_pos'])
@@ -121,13 +128,13 @@ class SarsaAgent(Agent):
                     print(f'win: {info["win"]}')
                     break
             stats.append((episode, total_rewards))
-            if episode > 0 and episode % 100 == 0:
+            if episode > 1000 and episode % 101 == 0:
                 print(f"SAVING AT {episode} EPISODES")
                 with open(self.filename, 'wb') as handle:
                     pickle.dump(dict(q_table), handle,
                                 protocol=pickle.HIGHEST_PROTOCOL)
                     handle.close()
-                with open(stats_filename, 'wb') as handle:
+                with open(self.stats_filename, 'wb') as handle:
                     pickle.dump(list(stats), handle,
                                 protocol=pickle.HIGHEST_PROTOCOL)
                     handle.close()
@@ -136,7 +143,7 @@ class SarsaAgent(Agent):
 
 
 def train_agent(layout: str, episodes: int = 5000):
-    agent = SarsaAgent(layout=layout, version='3')
+    agent = SarsaAgent(layout=layout, version='7')
     agent.train(episodes=episodes)
 
 
@@ -147,15 +154,19 @@ def boost_agent(layout: str, episodes: int = 5000):
 
 
 def run_agent(layout: str):
-    agent = SarsaAgent(layout=layout, version='1')
+    agent = SarsaAgent(layout=layout, version='7')
     agent.load_q_table()
     #agent.run()
     controller = Controller(
         layout_name=layout, act_sound=True, act_state=False, ai_agent=agent)
     controller.load_menu()
-
+def continue_training(layout: str):
+  agent = SarsaAgent(layout=layout, version='6')
+  agent.load_q_table()
+  agent.load_stats()
+  agent.train(100000, start_episode = 30300)
 
 if __name__ == '__main__':
     run_agent("medium")
-    #train_agent(layout="medium", episodes=1000)
+    #train_agent(layout="medium", episodes=100000)
     #boost_agent(layout="classic", episodes = 1000)
