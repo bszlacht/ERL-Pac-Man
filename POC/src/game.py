@@ -61,7 +61,7 @@ class Game(object):
         self.ghosts_timer = 0
         self.value_to_draw = 0
         self.pellet_snd_num = 0
-        self.sounds_active = sounds_active
+        self.sounds_active = False
         self.state_active = state_active
         self.maze = maze
 

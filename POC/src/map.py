@@ -111,7 +111,7 @@ class Map:
                 self.recolor_tile(self.tile_map[i, j])
 
     def matrix_from_lookup_table(self, lookup_table: Dict[int, int]) -> np.ndarray:
-        matrix = np.ndarray(shape=(self.map_matrix.shape[0], self.map_matrix.shape[1])).astype(np.int)
+        matrix = np.ndarray(shape=(self.map_matrix.shape[0], self.map_matrix.shape[1])).astype(np.int64)
 
         for i in range(self.map_matrix.shape[0]):
             for j in range(self.map_matrix.shape[1]):
