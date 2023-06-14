@@ -448,7 +448,7 @@ class Game(object):
                         self.add_reward(-500)
                 elif ghost.state == GhostState.vulnerable:
                     self.add_score(ghost.value)
-                    self.add_reward(200)
+                    self.add_reward(50)
                     self.draw_ghost_value(ghost.value)
                     self.duplicate_vulnerable_ghosts_value()
                     if self.sounds_active:
