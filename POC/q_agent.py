@@ -97,8 +97,8 @@ class QAgent(Agent):
         discount = 0.99
         alpha = 0.6  # learning rate
         epsilon = 1.0
-        epsilon_min = 0.1
-        epsilon_decay_rate = 1e6
+        epsilon_min = 0.05
+        epsilon_decay_rate = 1000000
         env = gym.make("pacman-v0", layout=self.layout)
         env = SkipFrame(env, skip=1)
         if self.q_table is None:
@@ -125,7 +125,7 @@ class QAgent(Agent):
                 info["number of scared ghosts"],
             ) 
             total_rewards = 0
-
+            print("epsilon = " + str(int(10 * epsilon)))
             epsilon = epsilon_by_frame(episode)
 
             for i in count():
@@ -170,12 +170,12 @@ class QAgent(Agent):
 
 
 def train_agent(layout: str, episodes: int = 5000):
-    agent = QAgent(layout=layout, version="3")
+    agent = QAgent(layout=layout, version="5")
     agent.train(episodes=episodes)
 
 
 def run_agent(layout: str):
-    agent = QAgent(layout=layout, version="3")
+    agent = QAgent(layout=layout, version="5")
     agent.load_q_table()
     controller = Controller(
         layout_name=layout, act_sound=True, act_state=False, ai_agent=agent
@@ -184,8 +184,8 @@ def run_agent(layout: str):
 
 
 if __name__ == "__main__":
-    #run_agent("medium")
-    train_agent(layout="medium", episodes=50000)
+    run_agent("medium")
+    #train_agent(layout="medium", episodes=50000)
     # boost_agent(layout="classic", episodes = 1000)
 
 '''
