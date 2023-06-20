@@ -32,7 +32,7 @@ class PacmanEnv(gym.Env):
     metadata = {'render.modes': ['human', 'rgb_array'], 'video.frames_per_second': 30}
     reward_range = (-10, 5)
 
-    def __init__(self, layout: str, enable_render=True, state_active=False, player_lives: int = 3):
+    def __init__(self, layout: str, enable_render=True, state_active=False, player_lives: int = 0):
         """
         PacmanEnv constructor
 
@@ -226,7 +226,7 @@ class PacmanEnv(gym.Env):
 
         if mode is GameMode.hit_ghost:
             self.game.player.lives -= 1
-            if self.game.player.lives == 0:
+            if self.game.player.lives == -1:
                 self.game.set_mode(GameMode.game_over)
             else:
                 self.game.init_players_in_map()

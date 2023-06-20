@@ -6,6 +6,7 @@ from typing import Union, Tuple, Dict, Any
 import pygame as pg
 from pygame.mixer import SoundType
 from pygame.surface import SurfaceType
+import time
 
 from src.pacman import Pacman
 from .constants import GHOST_COLORS, TILE_SIZE, SCORE_COLWIDTH, MODES_TO_ZERO, PATH_FINDER_LOOKUP_TABLE, MOVE_MODES, \
@@ -138,7 +139,7 @@ class Game(object):
     def start_game(self, restart=False):
         if restart:
             self.maze.reinit_map()
-            self.player.lives = 3
+            self.player.lives = 0
 
         self.set_mode(0)
         self.init_game()
@@ -174,10 +175,10 @@ class Game(object):
                                      for ghost in self.ghosts],
                     ghost_pixel_positions = [ghost.get_pixel_position() \
                                      for ghost in self.ghosts],
+                    number_of_scared_ghosts = [ghost.state == GhostState.vulnerable for ghost in self.ghosts].count(True),
                     screen=pg.surfarray.pixels3d(self.prev_screen),
                     player_action=self.player.current_action)
                 action = int(action)
-
             if action is not None:
                 self.player.change_player_vel(action, self)
 
@@ -207,10 +208,10 @@ class Game(object):
         sys.exit(0)
 
     def move_players(self):
-        self.player.move(self)
-        self.move_ghosts()
-
-        self.update_ghosts_position_in_map()
+        for i in range(6):
+            self.player.move(self)
+            self.move_ghosts()
+            self.update_ghosts_position_in_map()
 
     def move_ghosts(self):
         for ghost in self.ghosts:
@@ -405,7 +406,7 @@ class Game(object):
                             self.snd_pellet[self.pellet_snd_num].play()
                         self.pellet_snd_num = 1 - self.pellet_snd_num
                         self.add_score(10)
-                        self.add_reward(10)
+                        self.add_reward(60)
 
                         if self.maze.get_number_of_pellets() == 0:
                             self.set_mode(6)
@@ -416,7 +417,7 @@ class Game(object):
                         if self.sounds_active:
                             self.snd_power_pellet.play()
                         self.add_score(100)
-                        self.add_reward(20)
+                        self.add_reward(40)
                         self.make_ghosts_vulnerable()
                     elif self.maze.map_matrix[row][col] == 11:
                         # ran into a horizontal door
@@ -444,11 +445,11 @@ class Game(object):
             if check_if_hit(self.player.x, self.player.y, ghost.x, ghost.y, (3 * TILE_SIZE) // 4):
                 if ghost.state == GhostState.normal:
                     self.set_mode(GameMode.hit_ghost)
-                    if(self.player.lives == 0):
-                        self.add_reward(-500)
+                    # if(self.player.lives == 0):
+                    #     self.add_reward(-500)
                 elif ghost.state == GhostState.vulnerable:
                     self.add_score(ghost.value)
-                    self.add_reward(50)
+                    self.add_reward(120)
                     self.draw_ghost_value(ghost.value)
                     self.duplicate_vulnerable_ghosts_value()
                     if self.sounds_active:

@@ -2,6 +2,7 @@ import os
 from typing import Union, Tuple
 
 import pygame as pg
+import time
 
 from src.constants import TILE_SIZE, ROOT_DIR
 from src.utils.action import Action
@@ -11,12 +12,12 @@ from src.utils.game_mode import GameMode
 class Pacman(object):
 
     def __init__(self):
-        self._lives = 3
+        self._lives = 0
         self.x = 0
         self.y = 0
         self.vel_x = 0
         self.vel_y = 0
-        self.speed = 3
+        self.speed = 4
         self._current_action = Action.LEFT
 
         self.nearest_row = 0
@@ -56,7 +57,7 @@ class Pacman(object):
         self.nearest_col = self.home_x
 
     def regenerate(self):
-        self.lives = 3
+        self.lives = 0
         self.init_home(0, 0)
         self.set_vel_to_zero()
 
@@ -70,7 +71,7 @@ class Pacman(object):
         self.nearest_row = int(((self.y + TILE_SIZE / 2) / TILE_SIZE))
         self.nearest_col = int(((self.x + TILE_SIZE / 2) / TILE_SIZE))
         poss_x, poss_y = self.x + self.vel_x, self.y + self.vel_y
-
+        
         if not game.check_if_player_hit_wall(poss_x, poss_y):
             self.x += self.vel_x
             self.y += self.vel_y
